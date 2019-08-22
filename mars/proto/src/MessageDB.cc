@@ -3260,9 +3260,9 @@ namespace mars {
 #ifdef __ANDROID__
             std::list<std::string> columns;
             columns.push_back("_id");
-            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, columns, "_friend_uid=? and _state=?");
+            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, columns, "_friend_uid=? and _state in (0,2)");
 #else
-            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, {"_id"}, "_friend_uid=? and _state=?");
+            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, {"_id"}, "_friend_uid=? and _state  in (0,2)");
 #endif
             int error = 0;
             RecyclableStatement statementHandle(db, sql, error);
@@ -3271,7 +3271,7 @@ namespace mars {
             }
             
             db->Bind(statementHandle, userId, 1);
-            db->Bind(statementHandle, 0, 2);
+//            db->Bind(statementHandle, 0, 2);
             std::list<std::pair<std::string, int64_t>> refreshReqList;
             
             if (statementHandle.executeSelect()) {
@@ -3320,9 +3320,9 @@ namespace mars {
 #ifdef __ANDROID__
             std::list<std::string> columns;
             columns.push_back("_friend_uid");
-            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, columns, "_state=?");
+            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, columns, "_state in (0,2)");
 #else
-            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, {"_friend_uid"}, "_state=?");
+            std::string sql = db->GetSelectSql(FRIEND_TABLE_NAME, {"_friend_uid"}, "_state in (0,2)");
 #endif
             int error = 0;
             RecyclableStatement statementHandle(db, sql, error);
@@ -3330,7 +3330,7 @@ namespace mars {
                 return std::list<std::string>();
             }
             
-            db->Bind(statementHandle, 0, 1);
+//            db->Bind(statementHandle, 0, 1);
             std::list<std::string> result;
             
             while(statementHandle.executeSelect()) {

@@ -1321,7 +1321,7 @@ void deleteFriend(const std::string &userId, GeneralOperationCallback *callback)
 void blackListRequest(const std::string &userId, bool blacked, GeneralOperationCallback *callback) {
     BlackUserRequest *request = new BlackUserRequest();
     request->userId = userId;
-    request->status = blacked ? 2 : 1; //0 friend; 1 no relation; 2 blacklist
+    request->status = blacked ? 2 : 0; //0 friend; 1 no relation; 2 blacklist 这里取消黑名单直接更新为好友而不是删除关系
     publishTask(request, new GeneralOperationPublishCallback(callback), BlackListUserTopic, false);
 }
 
