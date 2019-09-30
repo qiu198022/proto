@@ -270,6 +270,9 @@ public:
                 request.phoneName = deviceInfo.phonename;
                 request.platform = deviceInfo.platform;
                 request.pushType = deviceInfo.pushtype;
+                if(request.pushType >= 16) {
+                    request.pushType = 0; //protect code.
+                }
                 request.appversion = deviceInfo.appversion;
                 request.sdkversion = deviceInfo.sdkversion;
 
@@ -1692,6 +1695,9 @@ void setDeviceToken(const std::string &appName, const std::string &deviceToken, 
     request->appName = appName;
     request->deviceToken = deviceToken;
     request->pushType = pushType;
+    if(request->pushType >= 16) {
+        request->pushType = 0; //protect code
+    }
 
     publishTask(request, new GeneralOperationPublishCallback(NULL), UploadDeviceTokenTopic, false);
 }
@@ -1845,8 +1851,13 @@ bool setAuthInfo(const std::string &userId, const std::string &token) {
         return false;
     }
     mars::stn::SetCallback(StnCallBack::Instance());
-    DB2::Instance()->Open(gDbSecret);
-    DB2::Instance()->Upgrade();
+    DB2::Instance()->Open(gDbSecret, false);
+    
+    if(DB2::Instance()->Upgrade() == -1) {
+        DB2::Instance()->Open(gDbSecret, true);
+        DB2::Instance()->Upgrade();
+    }
+    
     MessageDB::Instance()->FailSendingMessages();
     StnCallBack::Instance()->onDBOpened();
     mqtt_init(mars::app::GetDeviceInfo().clientid.c_str());
